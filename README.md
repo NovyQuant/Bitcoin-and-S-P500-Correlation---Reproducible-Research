@@ -1,5 +1,5 @@
-# Bitcoin-and-S-P500-Correlation---Reproducible-Research
-Reproducible Research of Bitcoin and S&amp;P500 Correlation from RStudio to Python with new data.
+# Bitcoin-and-S&P500-Correlation---Reproducible-Research
+Reproducible Research of Bitcoin and S&amp;P500 Correlation from R to Python with new data.
 https://www.kaggle.com/code/linhanphm/garch-family-bitcoin-and-s-p-500-correlation
 
 Data Source:
