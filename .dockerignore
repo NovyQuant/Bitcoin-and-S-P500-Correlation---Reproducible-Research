@@ -1,0 +1,11 @@
+.git
+.venv
+.ruff_cache
+__pycache__
+.ipynb_checkpoints
+notebooks/
+*.egg-info
+.env
+docs/_build
+*.pyc
+briefing_agent.pdf

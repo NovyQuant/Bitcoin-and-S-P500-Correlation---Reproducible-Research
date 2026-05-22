@@ -7,3 +7,18 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+
+# Sphinx
+docs/_build/
+docs/autoapi/
+
+# Quarto
+_freeze/
+.quarto/
+
+# Generated reports
+outputs/*
+!outputs/.gitkeep
+
+# Local briefing (not for repo)
+briefing_agent.pdf
