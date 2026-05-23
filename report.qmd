@@ -1,0 +1,42 @@
+---
+title: 'GARCH Family - Bitcoin and S&P 500 Correlation'
+format: html
+execute:
+  echo: false
+  warning: false
+---
+
+## Introduction
+
+Reproduction of BTC-S&P500 correlation analysis using GARCH model family
+(GARCH, EGARCH, GJR-GARCH, APARCH) and DCC-GARCH for time-varying correlation.
+Extended with Gold, ETH, VIX, NASDAQ.
+
+## Data
+
+```{python}
+# from garch_btc_sp.data.loader import load_data
+# df = load_data()
+# df.describe()
+```
+
+## Diagnostic Tests
+
+```{python}
+# from garch_btc_sp.stats.descriptive import ...
+# from garch_btc_sp.stats.tests import ...
+```
+
+## Univariate GARCH Models
+
+```{python}
+# from garch_btc_sp.models import GarchModel
+```
+
+## DCC-GARCH - Time-Varying Correlation
+
+```{python}
+# from garch_btc_sp.dcc import DccModel, plot_correlation
+```
+
+## Conclusions
