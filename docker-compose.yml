@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  report:
+    image: novyquant/garch-project:latest
+    volumes:
+      - ./outputs:/app/outputs

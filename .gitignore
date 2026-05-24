@@ -7,4 +7,22 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+
+# Sphinx
+docs/_build/
+docs/autoapi/
+
+# Quarto
+_freeze/
+.quarto/
+
+# Generated reports
+outputs/*
+!outputs/.gitkeep
+
+# Notebooks
 notebooks/figures/
+
+# Local planning docs (not for repo)
+briefing_agent.pdf
+plan_projektu_garch*.pdf

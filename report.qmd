@@ -1,0 +1,114 @@
+---
+title: 'GARCH Family - Bitcoin and S&P 500 Correlation'
+format:
+  html:
+    embed-resources: true
+execute:
+  echo: false
+  warning: false
+---
+
+## Introduction
+
+Reproduction of BTC-S&P500 correlation analysis using GARCH model family
+(GARCH, EGARCH, GJR-GARCH, APARCH) and DCC-GARCH for time-varying correlation.
+Extended with Oil, Gold and the VIX volatility index.
+
+## Data
+
+We reproduce the original Kaggle dataset and extend it with additional
+assets pulled from Yahoo Finance. Both are daily log-returns.
+
+### Replication dataset (Kaggle)
+
+BTC and S&P 500, recomputed from the original CSV (2011-2022).
+
+```{python}
+from garch_btc_sp.data.preprocessing import build_kaggle_returns
+from garch_btc_sp.stats.descriptive import descriptive_stats
+
+kaggle = build_kaggle_returns()
+descriptive_stats(kaggle)
+```
+
+### Extended dataset (Yahoo Finance)
+
+BTC and S&P 500 plus Oil, Gold and the VIX volatility index. Pre-computed
+log-returns loaded from the processed data baked into the image.
+
+```{python}
+import pandas as pd
+
+yahoo = pd.read_parquet("data/processed/returns_yahoo.parquet")
+descriptive_stats(yahoo)
+```
+
+## Diagnostic Tests
+
+ADF (stationarity), Jarque-Bera (normality), Ljung-Box on returns and their
+squares, and Engle's ARCH-LM test, run per asset. Low ARCH-LM p-values
+confirm conditional heteroskedasticity and justify GARCH-family modelling.
+
+### Replication dataset (Kaggle)
+
+```{python}
+from garch_btc_sp.stats.tests import run_all_tests
+
+run_all_tests(kaggle)
+```
+
+### Extended dataset (Yahoo Finance)
+
+```{python}
+run_all_tests(yahoo)
+```
+
+## Univariate GARCH Models
+
+Four GARCH-family variants (GARCH, EGARCH, GJR-GARCH, APARCH) are each fitted
+with three error distributions (normal, Student-t, skewed-t) to BTC and the
+S&P 500. Models are compared by AIC/BIC and Ljung-Box p-values on the
+standardized residuals (and their squares); the best model per asset is chosen
+by BIC.
+
+```{python}
+from garch_btc_sp.models import fit_model_grid, compare_models, select_best_by_bic
+
+garch_assets = ["BTC", "SP500"]
+grids = {asset: fit_model_grid(yahoo[asset]) for asset in garch_assets}
+comparison = compare_models([m for models in grids.values() for m in models])
+comparison
+```
+
+Best model per asset (lowest BIC):
+
+```{python}
+best = select_best_by_bic(comparison)
+best
+```
+
+Conditional volatility of the selected models:
+
+```{python}
+import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(len(garch_assets), 1, figsize=(9, 6), sharex=True)
+for ax, asset in zip(axes, garch_assets):
+    row = best[best["asset"] == asset].iloc[0]
+    model = next(
+        m for m in grids[asset]
+        if m.variant == row["model"] and m.distribution == row["distribution"]
+    )
+    model.conditional_volatility.plot(ax=ax)
+    ax.set_title(f"{asset}: {row['model']} ({row['distribution']}) conditional volatility")
+plt.tight_layout()
+plt.show()
+```
+
+## DCC-GARCH - Time-Varying Correlation
+
+```{python}
+# from garch_btc_sp.dcc import DccModel, plot_correlation
+```
+
+## Conclusions

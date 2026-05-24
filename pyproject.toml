@@ -14,10 +14,20 @@ dependencies = [
     "seaborn>=0.13",
     "pyarrow>=15.0",
     "ipykernel",
+    "nbformat>=5.9",
+    "nbclient>=0.9",
+    "jupyter",
 ]
 
 [project.optional-dependencies]
-dev = ["ruff>=0.4", "pre-commit>=3.7", "pytest>=8.0"]
+dev = [
+    "ruff>=0.4",
+    "pre-commit>=3.7",
+    "pytest>=8.0",
+    "sphinx>=7.0",
+    "furo>=2024.1",
+    "sphinx-autoapi>=3.0",
+]
 
 [build-system]
 requires = ["setuptools>=61"]
