@@ -23,9 +23,10 @@ BTC and S&P 500, recomputed from the original CSV (2011-2022).
 
 ```{python}
 from garch_btc_sp.data.preprocessing import build_kaggle_returns
+from garch_btc_sp.stats.descriptive import descriptive_stats
 
 kaggle = build_kaggle_returns()
-kaggle.describe()
+descriptive_stats(kaggle)
 ```
 
 ### Extended dataset (Yahoo Finance)
@@ -37,14 +38,20 @@ log-returns loaded from the processed data baked into the image.
 import pandas as pd
 
 yahoo = pd.read_parquet("data/processed/returns_yahoo.parquet")
-yahoo.describe()
+descriptive_stats(yahoo)
 ```
 
 ## Diagnostic Tests
 
+ADF (stationarity), Jarque-Bera (normality), Ljung-Box on returns and their
+squares, and Engle's ARCH-LM test, run per asset on the extended dataset.
+Low ARCH-LM p-values confirm conditional heteroskedasticity and justify
+GARCH-family modelling.
+
 ```{python}
-# from garch_btc_sp.stats.descriptive import ...
-# from garch_btc_sp.stats.tests import ...
+from garch_btc_sp.stats.tests import run_all_tests
+
+run_all_tests(yahoo)
 ```
 
 ## Univariate GARCH Models
