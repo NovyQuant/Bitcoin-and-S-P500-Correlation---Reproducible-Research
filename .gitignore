@@ -20,5 +20,6 @@ _freeze/
 outputs/*
 !outputs/.gitkeep
 
-# Local briefing (not for repo)
+# Local planning docs (not for repo)
 briefing_agent.pdf
+plan_projektu_garch*.pdf
