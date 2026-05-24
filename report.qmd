@@ -65,8 +65,44 @@ run_all_tests(yahoo)
 
 ## Univariate GARCH Models
 
+Four GARCH-family variants (GARCH, EGARCH, GJR-GARCH, APARCH) are each fitted
+with three error distributions (normal, Student-t, skewed-t) to BTC and the
+S&P 500. Models are compared by AIC/BIC and Ljung-Box p-values on the
+standardized residuals (and their squares); the best model per asset is chosen
+by BIC.
+
 ```{python}
-# from garch_btc_sp.models import GarchModel
+from garch_btc_sp.models import fit_model_grid, compare_models, select_best_by_bic
+
+garch_assets = ["BTC", "SP500"]
+grids = {asset: fit_model_grid(yahoo[asset]) for asset in garch_assets}
+comparison = compare_models([m for models in grids.values() for m in models])
+comparison
+```
+
+Best model per asset (lowest BIC):
+
+```{python}
+best = select_best_by_bic(comparison)
+best
+```
+
+Conditional volatility of the selected models:
+
+```{python}
+import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(len(garch_assets), 1, figsize=(9, 6), sharex=True)
+for ax, asset in zip(axes, garch_assets):
+    row = best[best["asset"] == asset].iloc[0]
+    model = next(
+        m for m in grids[asset]
+        if m.variant == row["model"] and m.distribution == row["distribution"]
+    )
+    model.conditional_volatility.plot(ax=ax)
+    ax.set_title(f"{asset}: {row['model']} ({row['distribution']}) conditional volatility")
+plt.tight_layout()
+plt.show()
 ```
 
 ## DCC-GARCH - Time-Varying Correlation
