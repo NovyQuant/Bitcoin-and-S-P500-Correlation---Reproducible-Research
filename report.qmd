@@ -44,13 +44,20 @@ descriptive_stats(yahoo)
 ## Diagnostic Tests
 
 ADF (stationarity), Jarque-Bera (normality), Ljung-Box on returns and their
-squares, and Engle's ARCH-LM test, run per asset on the extended dataset.
-Low ARCH-LM p-values confirm conditional heteroskedasticity and justify
-GARCH-family modelling.
+squares, and Engle's ARCH-LM test, run per asset. Low ARCH-LM p-values
+confirm conditional heteroskedasticity and justify GARCH-family modelling.
+
+### Replication dataset (Kaggle)
 
 ```{python}
 from garch_btc_sp.stats.tests import run_all_tests
 
+run_all_tests(kaggle)
+```
+
+### Extended dataset (Yahoo Finance)
+
+```{python}
 run_all_tests(yahoo)
 ```
 
