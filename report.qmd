@@ -1,6 +1,8 @@
 ---
 title: 'GARCH Family - Bitcoin and S&P 500 Correlation'
-format: html
+format:
+  html:
+    embed-resources: true
 execute:
   echo: false
   warning: false
