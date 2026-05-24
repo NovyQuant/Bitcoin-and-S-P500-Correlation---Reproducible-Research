@@ -9,3 +9,10 @@ notebooks/
 docs/_build
 *.pyc
 briefing_agent.pdf
+
+# quarto render artifacts (regenerated inside container)
+report.html
+report_files/
+outputs/
+_freeze/
+.quarto/

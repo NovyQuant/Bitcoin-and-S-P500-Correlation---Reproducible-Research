@@ -14,10 +14,17 @@ Extended with Gold, ETH, VIX, NASDAQ.
 
 ## Data
 
+Daily log-returns reproduced from the original Kaggle dataset (BTC, S&P 500).
+
 ```{python}
-# from garch_btc_sp.data.loader import load_data
-# df = load_data()
-# df.describe()
+from garch_btc_sp.data.preprocessing import build_kaggle_returns
+
+returns = build_kaggle_returns()
+returns.describe()
+```
+
+```{python}
+returns.head()
 ```
 
 ## Diagnostic Tests
