@@ -26,3 +26,9 @@ notebooks/figures/
 # Local planning docs (not for repo)
 briefing_agent.pdf
 plan_projektu_garch*.pdf
+
+# Original Kaggle notebook — reference only, do not redistribute
+garch-family-bitcoin*.ipynb
+
+# Local agent config
+.claude/
