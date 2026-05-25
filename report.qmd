@@ -139,6 +139,33 @@ Estimated DCC dynamics (time-varying BTC–S&P 500 correlation):
 plot_time_varying_correlation(dcc, "BTC", "SP500")
 ```
 
+## Sub-period Analysis
+
+Averaging the conditional correlation within each calendar year exposes a
+structural shift that the full-sample mean hides.
+
+```{python}
+corr = dcc.get_correlation("BTC", "SP500")
+yearly = corr.groupby(corr.index.year).mean()
+pre_2020 = round(float(corr[:"2019-12"].mean()), 2)
+post_2020 = round(float(corr["2020-01":].mean()), 2)
+
+fig, ax = plt.subplots(figsize=(9, 4))
+colors = ["steelblue" if yr < 2020 else "indianred" for yr in yearly.index]
+ax.bar(yearly.index.astype(str), yearly.values, color=colors)
+ax.axhline(0, color="black", linewidth=0.8)
+ax.set_ylabel("Mean conditional correlation")
+ax.set_title("Mean BTC–S&P 500 DCC correlation by year")
+plt.tight_layout()
+plt.show()
+```
+
+Before 2020 the correlation averaged only `{python} pre_2020` and was negative in
+some years, so Bitcoin behaved as a genuine diversifier. From 2020 onward it
+averaged `{python} post_2020`, peaking during the 2022 drawdown. The
+diversification benefit eroded as macro stress rose — the empirical basis for the
+qualification drawn in the conclusions.
+
 ## Comparison with the Original Study
 
 ```{python}
