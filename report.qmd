@@ -139,4 +139,85 @@ Estimated DCC dynamics (time-varying BTC–S&P 500 correlation):
 plot_time_varying_correlation(dcc, "BTC", "SP500")
 ```
 
+## Comparison with the Original Study
+
+```{python}
+_s = dcc.summary()
+_corr = dcc.get_correlation("BTC", "SP500")
+mean_corr = round(float(_corr.mean()), 2)
+min_corr = round(float(_corr.min()), 2)
+max_corr = round(float(_corr.max()), 2)
+persistence = round(float(_s["alpha_plus_beta"]), 3)
+_btc = best[best["asset"] == "BTC"].iloc[0]
+_sp = best[best["asset"] == "SP500"].iloc[0]
+btc_model = f"{_btc['model']} / {_btc['distribution']}"
+sp_model = f"{_sp['model']} / {_sp['distribution']}"
+```
+
+The original analysis is a Kaggle notebook (*linhanphm*, written in R with
+`rugarch`) titled "The Hedging and Diversification Abilities of Bitcoin Against
+the Stock Market". The table below contrasts its design and findings with this
+reproduction.
+
+| Dimension | Original (linhanphm, R) | This project (Python) |
+|---|---|---|
+| Sample | BTC + S&P 500, Jan 2011 – Dec 2022 | Replication 2011–2022, extended with Oil, Gold, VIX (Yahoo, 2014–present) |
+| Volatility models | GARCH, EGARCH, GJR — **normal** errors only | GARCH, EGARCH, GJR, APARCH × normal / Student-t / skewed-t |
+| Model selection | All three reported; AIC/BIC roughly tied (GARCH ≈ GJR) | BIC selects `{python} btc_model` (BTC), `{python} sp_model` (S&P 500) |
+| Correlation measure | **Static** — S&P coefficient β₂ in the BTC mean equation | **Dynamic** — DCC-GARCH(1,1) conditional correlation |
+| BTC–S&P result | Positive, significant (β₂ ≈ 0.74–0.76) | Positive on average (`{python} mean_corr`), ranging `{python} min_corr` to `{python} max_corr` |
+| Leverage effect | Present but mild (EGARCH α<0, GJR γ>0) | Captured via the asymmetric APARCH spec chosen by BIC |
+| Reproducibility | Single Kaggle R notebook | Docker + Quarto + Sphinx, one-command rebuild |
+
+**Where the results agree.** Both studies reach the same headline: Bitcoin is
+*positively* associated with the S&P 500 and therefore behaves as a diversifier
+rather than a hedge (in the Baur–Lucey sense). Both detect volatility
+asymmetry — the original through a negative EGARCH α and positive GJR γ, ours
+through BIC preferring the asymmetric APARCH model — and both confirm strong
+ARCH effects that justify GARCH modelling in the first place.
+
+**Where they differ.** The central methodological gap is the correlation
+itself. Despite its framing, the original never estimates a time-varying
+correlation: it reads "correlation" off the contemporaneous S&P regressor
+β₂ ≈ 0.75 and treats it as constant across 2011–2022. That coefficient is a
+return *sensitivity*, not a conditional correlation, so it is not directly
+comparable to our average DCC correlation of `{python} mean_corr`. The DCC,
+which the paper's title implies but never implements, shows the relationship is
+**not** constant — it ranges from `{python} min_corr` to `{python} max_corr`
+and is highly persistent (α + β = `{python} persistence`), tightening in
+stress periods. This nuances the original's blanket "diversifier" claim:
+diversification weakens precisely when it is most needed. We also relax the
+original's normal-error assumption — which its own goodness-of-fit tests
+reject — and BIC selects skewed-t, and we broaden the asset set beyond the
+single BTC–S&P pair.
+
 ## Conclusions
+
+This study reproduced the Kaggle BTC–S&P 500 correlation analysis and extended
+it with Oil, Gold and the VIX pulled from Yahoo Finance. The diagnostic tests
+confirm the stylized facts that motivate GARCH modelling: returns are heavily
+non-normal (Jarque-Bera) and exhibit strong conditional heteroskedasticity
+(significant ARCH-LM and Ljung-Box statistics on squared returns), so a
+constant-variance model is inadequate.
+
+At the univariate stage, BIC selects an asymmetric, fat-tailed specification
+for each series — `{python} btc_model` for BTC and `{python} sp_model` for the
+S&P 500 — consistent with the leverage effect and heavy tails documented in the
+literature. These fitted models supply the standardized residuals that drive
+the second stage.
+
+The central result is the **Dynamic Conditional Correlation**. The BTC–S&P 500
+correlation is not a single number: it averages `{python} mean_corr` but ranges
+from `{python} min_corr` to `{python} max_corr` across the sample, so the
+relationship is regime-dependent rather than constant. The estimated DCC
+persistence (α + β = `{python} persistence`) is close to unity, meaning shocks
+to the correlation decay slowly — periods of high co-movement, such as broad
+market stress, persist rather than reverting immediately. This qualifies the
+common claim that Bitcoin is a reliable equity diversifier: its co-movement with
+the S&P 500 tightens precisely when diversification would be most valuable.
+
+The whole pipeline is reproducible end-to-end: the dataset is baked into a
+Docker image, `make report` regenerates this document, and `make docs` builds
+the Sphinx API reference from the package docstrings. The natural extension is a
+full multivariate DCC across all five assets (adding Oil, Gold and the VIX) to
+map how Bitcoin's hedging properties vary against several markets at once.
