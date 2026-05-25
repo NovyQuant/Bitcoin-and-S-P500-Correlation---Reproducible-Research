@@ -67,3 +67,16 @@ def test_run_all_tests_shape() -> None:
     result = run_all_tests(returns)
     assert len(result) == returns.shape[1]
     assert "ARCH_LM_pval" in result.columns
+
+
+def test_weekend_gaps_dont_destroy_returns() -> None:
+    """Luki weekendowe (krypto 24/7 vs giełda 5 dni) nie niszczą zwrotów akcji."""
+    idx = pd.date_range("2020-01-01", periods=10, freq="D")
+    btc = pd.Series(range(100, 110), index=idx, dtype=float)
+    sp = pd.Series([3000, 3010, None, None, 3020, 3030, 3040, None, None, 3050], index=idx)
+    prices = pd.DataFrame({"BTC": btc, "SP500": sp})
+    # Usuwamy luki z cen PRZED liczeniem zwrotów -> zwroty między kolejnymi sesjami.
+    returns = compute_log_returns(prices.dropna()).dropna()
+    # 6 sesji S&P daje 5 zwrotów, zaden NaN.
+    assert len(returns) == 5
+    assert not returns.isna().any().any()
