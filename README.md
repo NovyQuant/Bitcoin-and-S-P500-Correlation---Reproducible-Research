@@ -7,10 +7,16 @@ Gold and the VIX volatility index, plus a longer date range.
 
 ```bash
 docker pull novyquant/garch-project:latest
-docker run -v $(pwd)/outputs:/app/outputs novyquant/garch-project:latest
+
+# macOS / Linux:
+docker run -v "$(pwd)/outputs:/app/outputs" novyquant/garch-project:latest
+
+# Windows (PowerShell):
+docker run -v "${PWD}/outputs:/app/outputs" novyquant/garch-project:latest
 ```
 
-The HTML report appears in the `outputs/` directory on the host.
+The HTML report appears in the `outputs/` directory on the host. Keep the mount
+in quotes — it protects against spaces in the path (e.g. `Quant Projects`).
 
 ## What the project does
 
@@ -34,8 +40,13 @@ From the published image (no local setup needed) — mount a host directory for
 the build output:
 
 ```bash
-docker run --rm -v $(pwd)/docs_html:/app/docs/_build novyquant/garch-project:latest make docs
-# open docs_html/html/index.html
+# macOS / Linux:
+docker run --rm -v "$(pwd)/docs_html:/app/docs/_build" novyquant/garch-project:latest make docs
+
+# Windows (PowerShell):
+docker run --rm -v "${PWD}/docs_html:/app/docs/_build" novyquant/garch-project:latest make docs
+
+# then open docs_html/html/index.html
 ```
 
 Locally (after the dev install below) just run `make docs` and open
