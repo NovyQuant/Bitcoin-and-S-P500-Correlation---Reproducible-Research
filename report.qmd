@@ -140,3 +140,45 @@ plot_time_varying_correlation(dcc, "BTC", "SP500")
 ```
 
 ## Conclusions
+
+```{python}
+_s = dcc.summary()
+_corr = dcc.get_correlation("BTC", "SP500")
+mean_corr = round(float(_corr.mean()), 2)
+min_corr = round(float(_corr.min()), 2)
+max_corr = round(float(_corr.max()), 2)
+persistence = round(float(_s["alpha_plus_beta"]), 3)
+_btc = best[best["asset"] == "BTC"].iloc[0]
+_sp = best[best["asset"] == "SP500"].iloc[0]
+btc_model = f"{_btc['model']} / {_btc['distribution']}"
+sp_model = f"{_sp['model']} / {_sp['distribution']}"
+```
+
+This study reproduced the Kaggle BTC–S&P 500 correlation analysis and extended
+it with Oil, Gold and the VIX pulled from Yahoo Finance. The diagnostic tests
+confirm the stylized facts that motivate GARCH modelling: returns are heavily
+non-normal (Jarque-Bera) and exhibit strong conditional heteroskedasticity
+(significant ARCH-LM and Ljung-Box statistics on squared returns), so a
+constant-variance model is inadequate.
+
+At the univariate stage, BIC selects an asymmetric, fat-tailed specification
+for each series — `{python} btc_model` for BTC and `{python} sp_model` for the
+S&P 500 — consistent with the leverage effect and heavy tails documented in the
+literature. These fitted models supply the standardized residuals that drive
+the second stage.
+
+The central result is the **Dynamic Conditional Correlation**. The BTC–S&P 500
+correlation is not a single number: it averages `{python} mean_corr` but ranges
+from `{python} min_corr` to `{python} max_corr` across the sample, so the
+relationship is regime-dependent rather than constant. The estimated DCC
+persistence (α + β = `{python} persistence`) is close to unity, meaning shocks
+to the correlation decay slowly — periods of high co-movement, such as broad
+market stress, persist rather than reverting immediately. This qualifies the
+common claim that Bitcoin is a reliable equity diversifier: its co-movement with
+the S&P 500 tightens precisely when diversification would be most valuable.
+
+The whole pipeline is reproducible end-to-end: the dataset is baked into a
+Docker image, `make report` regenerates this document, and `make docs` builds
+the Sphinx API reference from the package docstrings. The natural extension is a
+full multivariate DCC across all five assets (adding Oil, Gold and the VIX) to
+map how Bitcoin's hedging properties vary against several markets at once.
