@@ -4,7 +4,7 @@ data:
 	@echo 'Data is baked into the Docker image.'
 
 fit:
-	python -m garch_btc_sp
+	python -m garch_btc_sp.data
 
 report:
 	mkdir -p outputs

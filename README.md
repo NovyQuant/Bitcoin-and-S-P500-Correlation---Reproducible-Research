@@ -30,10 +30,16 @@ Data source: https://www.kaggle.com/datasets/linhanphm/bitcoin-and-s-and-p-500-h
 
 Auto-generated API docs are built from docstrings in `src/garch_btc_sp/`.
 
+From the published image (no local setup needed) — mount a host directory for
+the build output:
+
 ```bash
-make docs
-# Open docs/_build/html/index.html
+docker run --rm -v $(pwd)/docs_html:/app/docs/_build novyquant/garch-project:latest make docs
+# open docs_html/html/index.html
 ```
+
+Locally (after the dev install below) just run `make docs` and open
+`docs/_build/html/index.html`.
 
 ## Local Development
 
