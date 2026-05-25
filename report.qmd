@@ -107,8 +107,36 @@ plt.show()
 
 ## DCC-GARCH - Time-Varying Correlation
 
+The Dynamic Conditional Correlation model (Engle, 2002) is estimated in two
+steps: the standardized residuals of the BIC-selected univariate GARCH models
+feed a DCC(1,1) recursion, yielding a time-varying correlation between BTC and
+the S&P 500 rather than a single static coefficient.
+
 ```{python}
-# from garch_btc_sp.dcc import DccModel, plot_correlation
+from garch_btc_sp.models.dcc import DCCModel
+from garch_btc_sp.visualization import plot_time_varying_correlation
+
+
+def _best_model(asset):
+    row = best[best["asset"] == asset].iloc[0]
+    return next(
+        m for m in grids[asset]
+        if m.variant == row["model"] and m.distribution == row["distribution"]
+    )
+
+
+std_resid = pd.DataFrame(
+    {asset: _best_model(asset).standardized_residuals for asset in garch_assets}
+).dropna()
+
+dcc = DCCModel(std_resid).fit()
+dcc.summary()
+```
+
+Estimated DCC dynamics (time-varying BTC–S&P 500 correlation):
+
+```{python}
+plot_time_varying_correlation(dcc, "BTC", "SP500")
 ```
 
 ## Conclusions
