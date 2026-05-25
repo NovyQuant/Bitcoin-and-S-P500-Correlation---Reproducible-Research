@@ -55,6 +55,7 @@ def build_kaggle_returns(path: str | Path = "data.csv") -> pd.DataFrame:
 
 
 def build_yahoo_returns(
+    columns: list[str] | None = None,
     start: str = "2014-09-17",
     end: str | None = None,
     align: bool = True,
@@ -63,23 +64,27 @@ def build_yahoo_returns(
 
     Parameters
     ----------
+    columns : list[str] | None
+        Które aktywa zostawić (np. ``["BTC", "SP500"]``). ``None`` = wszystkie.
     start, end : str | None
         Zakres dat przekazywany do pobierania.
     align : bool
-        Jeśli ``True`` (domyślnie), usuwa dni z brakami w którymkolwiek
-        aktywie (inner join na sesjach giełdowych). To "czyste" podejście,
-        odmienne od oryginału — używane w nodze rozszerzonej.
+        Jeśli ``True`` (domyślnie), najpierw usuwa z CEN dni z brakami
+        (weekendy/święta), żeby zwroty liczyć między kolejnymi sesjami,
+        a nie względem pustych weekendów.
 
     Returns
     -------
     pd.DataFrame
-        Log-zwroty z kolumnami ``BTC, SP500, VIX, OIL, GOLD``.
+        Log-zwroty z wybranych kolumn.
     """
     prices = download_yahoo(start=start, end=end)
-    returns = compute_log_returns(prices)
+    if columns is not None:
+        prices = prices[columns]
     if align:
-        returns = returns.dropna()
-    return returns
+        prices = prices.dropna()  # usuń luki PRZED liczeniem zwrotów
+    returns = compute_log_returns(prices)
+    return returns.dropna()
 
 
 def save_processed(

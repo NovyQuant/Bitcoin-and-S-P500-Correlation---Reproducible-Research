@@ -27,9 +27,13 @@ def main() -> None:
     print(f"      returns_kaggle: {kaggle.shape[0]} x {kaggle.shape[1]}")
 
     print("3/3  Log-zwroty z danych Yahoo (rozszerzenie)...")
-    yahoo = compute_log_returns(prices).dropna()
-    save_processed(yahoo, name="returns_yahoo")
-    print(f"      returns_yahoo: {yahoo.shape[0]} x {yahoo.shape[1]}")
+    yahoo_all = compute_log_returns(prices.dropna()).dropna()
+    save_processed(yahoo_all, name="returns_yahoo")
+    print(f"      returns_yahoo (5 aktywow): {yahoo_all.shape[0]} x {yahoo_all.shape[1]}")
+
+    yahoo_btc_sp = compute_log_returns(prices[["BTC", "SP500"]].dropna()).dropna()
+    save_processed(yahoo_btc_sp, name="returns_yahoo_btc_sp")
+    print(f"      returns_yahoo_btc_sp: {yahoo_btc_sp.shape[0]} x {yahoo_btc_sp.shape[1]}")
 
     print("Gotowe. Pliki w data/processed/")
 
