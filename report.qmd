@@ -166,15 +166,15 @@ reproduction.
 | Model selection | All three reported; AIC/BIC roughly tied (GARCH ≈ GJR) | BIC selects `{python} btc_model` (BTC), `{python} sp_model` (S&P 500) |
 | Correlation measure | **Static** — S&P coefficient β₂ in the BTC mean equation | **Dynamic** — DCC-GARCH(1,1) conditional correlation |
 | BTC–S&P result | Positive, significant (β₂ ≈ 0.74–0.76) | Positive on average (`{python} mean_corr`), ranging `{python} min_corr` to `{python} max_corr` |
-| Leverage effect | Present but mild (EGARCH α<0, GJR γ>0) | Captured via the asymmetric APARCH spec chosen by BIC |
+| Leverage effect | Present but mild (EGARCH α<0, GJR γ>0) | Captured by the asymmetric specifications BIC selects (EGARCH / APARCH) |
 | Reproducibility | Single Kaggle R notebook | Docker + Quarto + Sphinx, one-command rebuild |
 
 **Where the results agree.** Both studies reach the same headline: Bitcoin is
 *positively* associated with the S&P 500 and therefore behaves as a diversifier
 rather than a hedge (in the Baur–Lucey sense). Both detect volatility
 asymmetry — the original through a negative EGARCH α and positive GJR γ, ours
-through BIC preferring the asymmetric APARCH model — and both confirm strong
-ARCH effects that justify GARCH modelling in the first place.
+through BIC preferring asymmetric specifications (EGARCH / APARCH) — and both
+confirm strong ARCH effects that justify GARCH modelling in the first place.
 
 **Where they differ.** The central methodological gap is the correlation
 itself. Despite its framing, the original never estimates a time-varying
@@ -188,8 +188,8 @@ and is highly persistent (α + β = `{python} persistence`), tightening in
 stress periods. This nuances the original's blanket "diversifier" claim:
 diversification weakens precisely when it is most needed. We also relax the
 original's normal-error assumption — which its own goodness-of-fit tests
-reject — and BIC selects skewed-t, and we broaden the asset set beyond the
-single BTC–S&P pair.
+reject — as BIC selects heavier-tailed errors (Student-t / skewed-t), and we
+broaden the asset set beyond the single BTC–S&P pair.
 
 ## Conclusions
 
