@@ -28,10 +28,14 @@ def main() -> None:
 
     print("3/3  Log-zwroty z danych Yahoo (rozszerzenie)...")
     yahoo_all = compute_log_returns(prices.dropna()).dropna()
+    if yahoo_all.empty:
+        raise RuntimeError("returns_yahoo is empty; refusing to overwrite processed data.")
     save_processed(yahoo_all, name="returns_yahoo")
     print(f"      returns_yahoo (5 aktywow): {yahoo_all.shape[0]} x {yahoo_all.shape[1]}")
 
     yahoo_btc_sp = compute_log_returns(prices[["BTC", "SP500"]].dropna()).dropna()
+    if yahoo_btc_sp.empty:
+        raise RuntimeError("returns_yahoo_btc_sp is empty; refusing to overwrite processed data.")
     save_processed(yahoo_btc_sp, name="returns_yahoo_btc_sp")
     print(f"      returns_yahoo_btc_sp: {yahoo_btc_sp.shape[0]} x {yahoo_btc_sp.shape[1]}")
 

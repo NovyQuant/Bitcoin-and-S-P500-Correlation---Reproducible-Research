@@ -19,6 +19,7 @@ _freeze/
 # Generated reports
 outputs/*
 !outputs/.gitkeep
+data/raw/.yfinance_cache/
 
 # Notebooks
 notebooks/figures/

@@ -25,7 +25,11 @@ def plot_time_varying_correlation(
 
     ax.set_xlabel("Date", fontsize=11)
     ax.set_ylabel("Correlation", fontsize=11)
-    ax.set_title(f"Dynamic Conditional Correlation: {asset1} - {asset2}", fontsize=13, fontweight="bold")
+    ax.set_title(
+        f"Dynamic Conditional Correlation: {asset1} - {asset2}",
+        fontsize=13,
+        fontweight="bold",
+    )
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()

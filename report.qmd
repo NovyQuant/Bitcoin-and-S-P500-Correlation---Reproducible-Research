@@ -35,11 +35,14 @@ descriptive_stats(kaggle)
 
 BTC and S&P 500 plus Oil, Gold and the VIX volatility index. Pre-computed
 log-returns loaded from the processed data baked into the image.
+For the BTC-S&P 500 GARCH/DCC stages we also use a pair-specific Yahoo return
+matrix, avoiding the loss of observations caused by Oil/Gold/VIX holidays.
 
 ```{python}
 import pandas as pd
 
 yahoo = pd.read_parquet("data/processed/returns_yahoo.parquet")
+yahoo_btc_sp = pd.read_parquet("data/processed/returns_yahoo_btc_sp.parquet")
 descriptive_stats(yahoo)
 ```
 
@@ -75,7 +78,7 @@ by BIC.
 from garch_btc_sp.models import fit_model_grid, compare_models, select_best_by_bic
 
 garch_assets = ["BTC", "SP500"]
-grids = {asset: fit_model_grid(yahoo[asset]) for asset in garch_assets}
+grids = {asset: fit_model_grid(yahoo_btc_sp[asset]) for asset in garch_assets}
 comparison = compare_models([m for models in grids.values() for m in models])
 comparison
 ```

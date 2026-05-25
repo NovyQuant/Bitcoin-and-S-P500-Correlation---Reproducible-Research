@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 from garch_btc_sp.data.preprocessing import build_yahoo_returns
-from garch_btc_sp.models import GARCH_VARIANTS, compare_models, fit_model_grid, select_best_by_bic
+from garch_btc_sp.models import compare_models, fit_model_grid, select_best_by_bic
 
 ASSETS = ("BTC", "SP500", "VIX", "OIL", "GOLD")
 

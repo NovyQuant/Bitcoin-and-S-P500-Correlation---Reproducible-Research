@@ -65,6 +65,10 @@ def download_yahoo(
     if tickers is None:
         tickers = YAHOO_TICKERS
 
+    cache_dir = RAW_DIR / ".yfinance_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    yf.set_tz_cache_location(str(cache_dir))
+
     raw = yf.download(
         list(tickers.values()),
         start=start,
@@ -72,11 +76,19 @@ def download_yahoo(
         auto_adjust=True,
         progress=False,
     )
+    if raw.empty or "Close" not in raw:
+        raise RuntimeError("Yahoo Finance download returned no close prices.")
 
     close = raw["Close"].copy()
     # Zamień tickery Yahoo z powrotem na czytelne nazwy.
     ticker_to_name = {v: k for k, v in tickers.items()}
     close = close.rename(columns=ticker_to_name)
+    missing = sorted(set(tickers) - set(close.columns))
+    if missing:
+        raise RuntimeError(f"Yahoo Finance download is missing assets: {missing}")
+    empty_assets = sorted(column for column in tickers if close[column].dropna().empty)
+    if empty_assets:
+        raise RuntimeError(f"Yahoo Finance download returned no observations for: {empty_assets}")
     close.index.name = "Date"
     return close.sort_index()
 

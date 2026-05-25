@@ -60,7 +60,7 @@ class DCCModel:
             Q[0] = Q_bar
 
             for t in range(1, T):
-                # Q_t = (1 - alpha - beta) * Q_bar + alpha * (eps_{t-1} eps_{t-1}^T) + beta * Q_{t-1}
+                # Q_t recursion from Engle (2002), driven by lagged residual outer products.
                 outer_prod = np.outer(residuals[t - 1], residuals[t - 1])
                 Q[t] = (1 - alpha - beta) * Q_bar + alpha * outer_prod + beta * Q[t - 1]
 
@@ -191,7 +191,8 @@ class DCCModel:
 
         key = tuple(sorted([asset1, asset2]))
         if key not in self.time_varying_corr:
-            raise ValueError(f"Correlation {key} not found. Available: {list(self.time_varying_corr.keys())}")
+            available = list(self.time_varying_corr.keys())
+            raise ValueError(f"Correlation {key} not found. Available: {available}")
 
         return self.time_varying_corr[key]
 
